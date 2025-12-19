@@ -1,8 +1,8 @@
 {
-  "name": "cg-conway-js",
+  "name": "cg-conway",
   "version": "1.0.0",
-  "description": "Conway's \"Game of Life\" in JavaScript",
-  "main": "index.js",
+  "description": "Conway's \"Game of Life\" in TypeScript",
+  "main": "index.ts",
   "repository": "git@github.com:Lagaxyy/CG-conway-js.git",
   "author": "Lagaxyy <99192098+Lagaxyy@users.noreply.github.com>",
   "license": "MIT"
