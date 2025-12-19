@@ -1,0 +1,9 @@
+{
+  "name": "cg-conway-js",
+  "version": "1.0.0",
+  "description": "Conway's \"Game of Life\" in JavaScript",
+  "main": "index.js",
+  "repository": "git@github.com:Lagaxyy/CG-conway-js.git",
+  "author": "Lagaxyy <99192098+Lagaxyy@users.noreply.github.com>",
+  "license": "MIT"
+}
