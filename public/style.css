@@ -7,7 +7,9 @@ body {
     margin: 0;
     padding: 0;
     color: black;
-    /* background-color: rgba(255, 255, 255, 0.87); */
+    /* Alternative light theme background; uncomment the value below if a lighter background is desired:
+       background-color: rgba(255, 255, 255, 0.87);
+    */
     background-color: #A9A9A9;
 }
 
