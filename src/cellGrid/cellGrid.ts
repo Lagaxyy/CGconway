@@ -238,6 +238,7 @@ class CellGrid {
     }
     if (action === "destroy" && tickers[tickerKey] !== undefined) {
       tickers[tickerKey].destroy();
+      delete tickers[tickerKey];
     }
   }
 
