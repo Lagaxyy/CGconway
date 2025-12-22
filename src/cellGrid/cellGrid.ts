@@ -59,7 +59,7 @@ class CellGrid {
     this.#app = undefined;
   }
 
-  get cells() {
+  get cells(): ReadonlyArray<ReadonlyArray<Readonly<Cell>>> {
     return this.#cells;
   }
 
