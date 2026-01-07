@@ -39,6 +39,20 @@ const animationRightShift = (grid: CellGrid) => {
 
 /* SCRIPT */
 
+document.getElementById("button-test")?.addEventListener("click", async () => {
+  try {
+    const response = await fetch("/test");
+    const data = await response.json();
+    const result = document.getElementById("result");
+
+    if (result !== null) {
+      result.textContent = "Result: " + JSON.stringify(data);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+});
+
 const asyncScript = async () => {
   const simpleAnimation = {
     name: "animationRightShift",
