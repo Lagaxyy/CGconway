@@ -30,20 +30,6 @@ const boundIndex = (index: number, value: number, limit: number): number => {
 
 /* SCRIPT */
 
-document.getElementById("button-test")?.addEventListener("click", async () => {
-  try {
-    const response = await fetch("/test");
-    const data = await response.json();
-    const result = document.getElementById("result");
-
-    if (result !== null) {
-      result.textContent = "Result: " + JSON.stringify(data);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-});
-
 const gameOfLife = (grid: CellGrid) => {
   const isStateAndRendered = (
     grid: CellGrid,
@@ -146,10 +132,18 @@ const gameOfLife = (grid: CellGrid) => {
   grid.render();
 };
 
-const patternApply = (patternCells: Array<{ i: number; j: number }>) => {
-  for (const cell of patternCells) {
+const patternApply = (pattern: {
+  name: string;
+  cells: Array<{ i: number; j: number }>;
+}) => {
+  for (const cell of pattern.cells) {
     grid.changeCellStateByMatrixIndexes(cell.i, cell.j, "alive");
   }
+
+  const infoNamePattern = document.getElementById("info-name-pattern");
+
+  if (infoNamePattern !== null)
+    infoNamePattern.textContent = `Structure: ${pattern.name}`;
 };
 
 const patternClean = () => {
@@ -185,11 +179,21 @@ document.getElementById("button-stop")?.addEventListener("click", () => {
 });
 
 document.getElementById("button-speed-up")?.addEventListener("click", () => {
+  const infoSpeedMult = document.getElementById("info-speed-multiplier");
+
   grid.speedMultiplier = grid.speedMultiplier * 2;
+
+  if (infoSpeedMult !== null)
+    infoSpeedMult.textContent = `Speed Multiplier: ${grid.speedMultiplier}x`;
 });
 
 document.getElementById("button-slow-down")?.addEventListener("click", () => {
+  const infoSpeedMult = document.getElementById("info-speed-multiplier");
+
   grid.speedMultiplier = grid.speedMultiplier / 2;
+
+  if (infoSpeedMult !== null)
+    infoSpeedMult.textContent = `Speed Multiplier: ${grid.speedMultiplier}x`;
 });
 
 document
