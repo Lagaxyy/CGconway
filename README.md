@@ -1,2 +1,2 @@
 # CGconway
-Conway's "Game of Life", implemented in JavaScript
+Conway's "Game of Life", implemented in TypeScript
