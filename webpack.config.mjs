@@ -41,12 +41,12 @@ export default (_env, argv) => {
     plugins: [
       // Copy our static assets to the final build
       new CopyPlugin({
-        patterns: [{ from: path.resolve(process.cwd(), "public/") }],
+        patterns: [{ from: path.resolve(process.cwd(), "public/static/") }],
       }),
 
       // Make an index.html from the template
       new HtmlWebpackPlugin({
-        template: path.resolve(process.cwd(), "index.ejs"),
+        template: path.resolve(process.cwd(), "public/", "index.ejs"),
         hash: true,
         minify: false,
       }),

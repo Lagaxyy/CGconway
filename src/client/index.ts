@@ -1,5 +1,5 @@
 import CellGrid from "./cellGrid/cellGrid";
-import Patterns from "../../patterns.json";
+import Patterns from "../../public/patterns.json";
 
 /* TS */
 
