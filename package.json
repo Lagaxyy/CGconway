@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "clean": "rm -r dist/ *.log",
     "lint": "eslint .",
     "server": "node dist/node/node-bundle.cjs",
     "build": "npm run lint && webpack --mode=production",

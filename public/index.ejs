@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css">
     <title>Conway's Game of Life</title>
@@ -16,17 +16,36 @@
             <div id="pixi-container"></div>
         </div>
         <div id="infos">
-            <div id="info-name-pattern">Structure: </div>
+            <div id="info-name-pattern">Current pattern: </div>
             <div id="info-speed-multiplier">Speed Multiplier: 1x</div>
             <div id="info-debug" style="display: none;">Coordinates of the last click: ()</div>
         </div>
         <div id="buttons">
-            <button id="button-start" class="button">Start</button>
-            <button id="button-stop" class="button">Stop</button>
+            <button id="button-toggle" class="button">Start/Stop</button>
             <button id="button-speed-up" class="button">Speed up</button>
             <button id="button-slow-down" class="button">Slow down</button>
-            <button id="button-switch-pattern" class="button">Switch Pattern</button>
+            <button id="button-clean-canvas" class="button">Clean canvas</button>
         </div>
+        <div id="patterns">
+            <div id="patterns-search">
+                <input type="text" placeholder="Search for a pattern">
+                <button>Search</button>
+            </div>
+            <ul id="patterns-list"></ul>
+            <div id="patterns-import">
+                <input id="patterns-import-input" type="text" placeholder="Enter the compressed canvas here">
+                <button id="patterns-import-button">Import</button>
+            </div>
+            <div id="patterns-export">
+                <button id="patterns-export-button">Export current canvas</button>
+                <div id="patterns-export-display">
+                    <p id="patterns-export-content"></p>
+                    <p id="patterns-export-message">Copied to clipboard !</p>
+                </div>
+            </div>
+        </div>
+
+        <footer></footer>
     </div>
 </body>
 </html>
