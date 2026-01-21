@@ -232,6 +232,44 @@ document.getElementById("button-slow-down")?.addEventListener("click", () => {
     infoSpeedMult.textContent = `Speed Multiplier: ${grid.speedMultiplier}x`;
 });
 
+document
+  .getElementById("patterns-import-button")
+  ?.addEventListener("click", () => {
+    const patternsInput = <HTMLInputElement>(
+      document.getElementById("patterns-import-input")
+    );
+
+    if (patternsInput !== null) {
+      applyPatternToCanvas({
+        name: "Imported Canvas",
+        canvas: patternsInput.value ?? "",
+      });
+    }
+  });
+
+document
+  .getElementById("patterns-export-button")
+  ?.addEventListener("click", () => {
+    const exportDisplayContent = document.getElementById(
+      "patterns-export-content",
+    );
+    const exportDisplayMessage = document.getElementById(
+      "patterns-export-message",
+    );
+    const compressed = grid.compress();
+
+    if (exportDisplayContent !== null) {
+      exportDisplayContent.textContent = compressed;
+    }
+    if (exportDisplayMessage !== null) {
+      exportDisplayMessage.setAttribute(
+        "style",
+        "display: inherit; text-align: center;",
+      );
+      navigator.clipboard.writeText(compressed);
+    }
+  });
+
 // const buttonDebug = document.createElement("button");
 // buttonDebug.className = "button";
 // buttonDebug.textContent = "Debug";
