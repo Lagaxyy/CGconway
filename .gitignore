@@ -26,3 +26,9 @@ dist-ssr
 
 # devnotes
 devnotes*.md
+
+#backups of database
+dumps/
+
+# Local Netlify folder
+.netlify
