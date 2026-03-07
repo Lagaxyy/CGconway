@@ -10,7 +10,7 @@ const logger = Guacalog.getInstance();
 export const config: Config = {
   path: "/api/getCanvas",
   rateLimit: {
-    windowLimit: 3,
+    windowLimit: 30,
     windowSize: 60,
     aggregateBy: ["ip"],
   },
