@@ -9,7 +9,7 @@ const logger = Guacalog.getInstance();
 
 export const config: Config = {
   rateLimit: {
-    windowLimit: 30,
+    windowLimit: 3,
     windowSize: 60,
     aggregateBy: ["ip"],
   },
