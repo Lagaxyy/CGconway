@@ -8,6 +8,7 @@ dotenv.config({ path: "secrets.env" });
 const logger = Guacalog.getInstance();
 
 export const config: Config = {
+  path: "/api/getCanvas",
   rateLimit: {
     windowLimit: 3,
     windowSize: 60,
