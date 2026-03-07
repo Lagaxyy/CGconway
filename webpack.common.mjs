@@ -1,5 +1,4 @@
 import path from "path";
-import webpack from "webpack";
 import TerserPlugin from "terser-webpack-plugin";
 
 export default (_env, argv) => {

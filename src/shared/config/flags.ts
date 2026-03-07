@@ -7,8 +7,8 @@ export function getFlags(): Flags {
   return {
     CONTEXT:
       process.env.NODE_ENV === "development" ? "development" : "production",
-    API_ADD: process.env.FEATURE_API_ADD === "false",
+    API_ADD: process.env.FEATURE_API_ADD === "true",
   };
 }
 
-export const Flags = getFlags();
+export const FLAGS = getFlags();

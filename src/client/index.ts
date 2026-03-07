@@ -51,9 +51,12 @@ const getPatterns = async (filter: string | undefined = undefined) => {
   let result = undefined;
 
   if (filter !== undefined) {
-    result = await fetch(`/api/getCanvas?search=${filter}`, {
-      method: "GET",
-    });
+    result = await fetch(
+      `/api/getCanvas?search=${encodeURIComponent(filter)}`,
+      {
+        method: "GET",
+      },
+    );
   } else {
     result = await fetch("/api/getCanvas", {
       method: "GET",
@@ -67,7 +70,7 @@ const writeListOfPatterns = async (filter: string | undefined = undefined) => {
   const listOfPatterns = document.getElementById("patterns-list");
 
   if (listOfPatterns === null) {
-    throw Error("No list of patterns <ul> found.");
+    throw Error('Search input element "#patterns-search-input" not found.');
   }
 
   const response = await getPatterns(filter);
@@ -320,11 +323,17 @@ document
     }
 
     if (searchInput.value.length === 0) {
-      writeListOfPatterns();
+      writeListOfPatterns().catch((error) => {
+        console.error("Failed to load patterns: ", error);
+      });
     } else {
-      writeListOfPatterns(searchInput.value);
+      writeListOfPatterns(searchInput.value).catch((error) => {
+        console.error("Failed to load patterns: ", error);
+      });
     }
   });
 
 // Canvas handler
-writeListOfPatterns();
+writeListOfPatterns().catch((error) => {
+  console.error("Failed to load patterns: ", error);
+});

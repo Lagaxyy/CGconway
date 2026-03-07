@@ -16,24 +16,27 @@ export const config: Config = {
 };
 
 export default async (request: Request) => {
-  try {
-    logger.log(
-      import.meta.url,
-      "info",
-      `Received /getCanvas ${request.method} request !`,
-    );
+  let result = undefined;
+  let check = false;
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
 
+  logger.log(
+    import.meta.url,
+    "info",
+    `Received /getCanvas ${request.method} request !`,
+  );
+
+  try {
     if (request.method === "GET") {
-      let result = undefined;
+      check = true;
+
       const url = new URL(request.url);
       const searchParams = new URLSearchParams(url.search);
-
-      const client = new Client({
-        connectionString: process.env.DATABASE_URL,
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      });
 
       await client.connect();
       if (searchParams.has("search")) {
@@ -44,19 +47,20 @@ export default async (request: Request) => {
       } else {
         result = await client.query("SELECT * FROM canvas;");
       }
-      await client.end();
-
-      return new Response(JSON.stringify(result));
     }
 
-    throw Error("Endpoint not active.");
+    if (!check) throw Error("Endpoint not active.");
   } catch (error) {
     if (error instanceof Error) {
       logger.log(import.meta.url, "error", error.stack ?? error.message);
 
-      return new Response(error.toString(), {
+      return new Response(JSON.stringify({ errorMessage: error.message }), {
         status: 500,
       });
     }
+  } finally {
+    await client.end();
   }
+
+  return new Response(JSON.stringify(result));
 };
