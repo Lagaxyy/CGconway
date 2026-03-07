@@ -5,7 +5,7 @@ import { Config } from "@netlify/functions";
 import Guacalog from "@/libraries/guacalog/main";
 import { FLAGS } from "@/shared/config/flags";
 
-const logger = Guacalog.getInstance("cgconway.log");
+const logger = Guacalog.getInstance();
 
 dotenv.config({ path: "secrets.env" });
 

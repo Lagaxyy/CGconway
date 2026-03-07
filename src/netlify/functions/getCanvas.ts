@@ -5,7 +5,7 @@ import { Config } from "@netlify/functions";
 import Guacalog from "@/libraries/guacalog/main";
 
 dotenv.config({ path: "secrets.env" });
-const logger = Guacalog.getInstance("cgconway.log");
+const logger = Guacalog.getInstance();
 
 export const config: Config = {
   rateLimit: {
