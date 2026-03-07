@@ -138,7 +138,11 @@ class CellGrid {
     }
 
     this.#app = new Application();
-    await this.#app.init({ background: "#000000", resizeTo: pixiContainer });
+    await this.#app.init({
+      background: "#000000",
+      resizeTo: pixiContainer,
+      preference: "webgl",
+    });
     pixiContainer.appendChild(this.#app.canvas);
 
     const container = new Container({ label: LABEL_MAIN_CONTAINER });
@@ -300,6 +304,73 @@ class CellGrid {
     if (action === "destroy" && tickers[tickerKey] !== undefined) {
       tickers[tickerKey].destroy();
       delete tickers[tickerKey];
+    }
+  }
+
+  clean() {
+    const limitRows = this.cells.length;
+    const limitColumns = this.cells[0].length;
+
+    for (let i = 0; i < limitRows; i++) {
+      for (let j = 0; j < limitColumns; j++) {
+        if (this.cells[i][j].state == "alive") {
+          this.changeCellStateByMatrixIndexes(i, j, "dead");
+        }
+      }
+    }
+  }
+
+  /**
+   * Compresses current canvas using bitpacking and base64 encoding
+   */
+  compress(): string {
+    let index = 0;
+    const numberOfCells = (this.width * this.height) / CELL_SIZE ** 2;
+    const bytes = new Uint8Array(numberOfCells / 8);
+    for (let i = 0; i < this.height / CELL_SIZE; i++) {
+      for (let j = 0; j < this.width / CELL_SIZE; j++) {
+        if (this.#cells[i][j].state === "alive") {
+          bytes[Math.floor(index / 8)] |= 1 << (index % 8);
+        }
+
+        index++;
+      }
+    }
+
+    let binary = "";
+    for (const byte of bytes) {
+      binary += String.fromCharCode(byte);
+    }
+
+    return btoa(binary);
+  }
+
+  decompress(compressed: string) {
+    if (compressed.length === 0) {
+      this.clean();
+      return;
+    }
+
+    const binary = atob(compressed);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+
+    let index = 0;
+    for (let i = 0; i < this.height / CELL_SIZE; i++) {
+      for (let j = 0; j < this.width / CELL_SIZE; j++) {
+        const compressedState =
+          (bytes[Math.floor(index / 8)] & (1 << (index % 8))) !== 0
+            ? "alive"
+            : "dead";
+
+        if (this.#cells[i][j].state !== compressedState) {
+          this.changeCellStateByMatrixIndexes(i, j, compressedState);
+        }
+
+        index++;
+      }
     }
   }
 

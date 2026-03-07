@@ -1,0 +1,16 @@
+[build]
+command="npm run build:dev"
+functions="src/netlify/functions"
+
+[[redirects]]
+from="/api/*"
+to="/.netlify/functions/:splat"
+status=200
+
+[context.production.environment]
+NODE_ENV="production"
+FEATURE_API_ADD="false"
+
+[context.dev.environment]
+NODE_ENV="development"
+FEATURE_API_ADD="true"

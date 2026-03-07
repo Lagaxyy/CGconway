@@ -17,7 +17,7 @@ export default (_env, argv) => {
     // Your build destination
     output: {
       path: path.resolve(process.cwd(), "dist", "browser"),
-      filename: "bundle.js",
+      filename: "bundle-browser.js",
       clean: true,
     },
 
@@ -54,18 +54,5 @@ export default (_env, argv) => {
       new NodePolyfillPlugin(),
     ],
   }),
-  merge(common(_env, argv), {
-    context: path.resolve(process.cwd(), "src/server"),
-    entry: './main.ts',
-    target: 'node',
-    output: {
-      filename: 'node-bundle.cjs',
-      path: path.resolve(process.cwd(), "dist", "node"),
-      clean: true,
-      library: {
-        type: "commonjs-static"
-      }
-    },
-  })
 ]
 };

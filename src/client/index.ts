@@ -1,5 +1,4 @@
 import CellGrid from "./cellGrid/cellGrid";
-import Patterns from "../../public/patterns.json";
 
 /* TS */
 
@@ -9,15 +8,19 @@ interface WaitingCell {
   state: "alive" | "dead";
 }
 
+interface Pattern {
+  id: number;
+  data: string;
+  name: string;
+  canvas: string;
+  popularity: number;
+  tag: number;
+  created_at: string;
+}
+
 /* GLOBALS */
 
-const PATTERNS = [
-  Patterns.blank,
-  Patterns.spaceship.glider,
-  Patterns.spaceship.lwss,
-  Patterns.oscillator.pulsar,
-];
-let currentPattern = 0;
+let TOGGLE: "start" | "stop" = "stop";
 
 /* HELPERS */
 
@@ -29,7 +32,68 @@ const boundIndex = (index: number, value: number, limit: number): number => {
   return (index + value) % limit;
 };
 
-/* SCRIPT */
+const applyPatternToCanvas = (name: string, data: string) => {
+  grid.decompress(data);
+
+  const infoNamePattern = document.getElementById("info-name-pattern");
+
+  if (infoNamePattern !== null)
+    infoNamePattern.textContent = `Current pattern: ${name}`;
+};
+
+const resetCanvas = () => {
+  grid.clean();
+  grid.tickLoop("destroy", animationGameOfLife);
+  TOGGLE = "stop";
+};
+
+const getPatterns = async (filter: string | undefined = undefined) => {
+  let result = undefined;
+
+  if (filter !== undefined) {
+    result = await fetch(`/api/getCanvas?search=${filter}`, {
+      method: "GET",
+    });
+  } else {
+    result = await fetch("/api/getCanvas", {
+      method: "GET",
+    });
+  }
+
+  return result.json();
+};
+
+const writeListOfPatterns = async (filter: string | undefined = undefined) => {
+  const listOfPatterns = document.getElementById("patterns-list");
+
+  if (listOfPatterns === null) {
+    throw Error("No list of patterns <ul> found.");
+  }
+
+  const response = await getPatterns(filter);
+  const patterns: Array<Pattern> = response.rows;
+
+  for (const pattern of patterns) {
+    const element = document.createElement("li");
+    const content = document.createElement("span");
+    const buttonApply = document.createElement("button");
+
+    content.textContent = pattern.name;
+
+    buttonApply.className = "patterns-list-button-apply";
+    buttonApply.addEventListener("click", () => {
+      resetCanvas();
+      applyPatternToCanvas(pattern.name, pattern.data);
+      grid.render();
+    });
+    buttonApply.textContent = "Apply";
+
+    element.appendChild(content);
+    element.appendChild(buttonApply);
+
+    listOfPatterns.appendChild(element);
+  }
+};
 
 const gameOfLife = (grid: CellGrid) => {
   const isStateAndRendered = (
@@ -131,32 +195,7 @@ const gameOfLife = (grid: CellGrid) => {
   grid.render();
 };
 
-const applyPatternToCanvas = (pattern: {
-  name: string;
-  cells: Array<{ i: number; j: number }>;
-}) => {
-  for (const cell of pattern.cells) {
-    grid.changeCellStateByMatrixIndexes(cell.i, cell.j, "alive");
-  }
-
-  const infoNamePattern = document.getElementById("info-name-pattern");
-
-  if (infoNamePattern !== null)
-    infoNamePattern.textContent = `Structure: ${pattern.name}`;
-};
-
-const cleanCanvas = () => {
-  const limitRows = grid.cells.length;
-  const limitColumns = grid.cells[0].length;
-
-  for (let i = 0; i < limitRows; i++) {
-    for (let j = 0; j < limitColumns; j++) {
-      if (grid.cells[i][j].state == "alive") {
-        grid.changeCellStateByMatrixIndexes(i, j, "dead");
-      }
-    }
-  }
-};
+/* SCRIPT */
 
 const animationGameOfLife = {
   name: "animationGameOfLife",
@@ -166,15 +205,18 @@ const animationGameOfLife = {
 const grid = new CellGrid();
 await grid.init();
 
-applyPatternToCanvas(PATTERNS[currentPattern]);
+applyPatternToCanvas("Blank Canvas", "");
 grid.render();
 
-document.getElementById("button-start")?.addEventListener("click", () => {
-  grid.tickLoop("start", animationGameOfLife);
-});
-
-document.getElementById("button-stop")?.addEventListener("click", () => {
-  grid.tickLoop("stop", animationGameOfLife);
+// Buttons
+document.getElementById("button-toggle")?.addEventListener("click", () => {
+  if (TOGGLE === "stop") {
+    grid.tickLoop("start", animationGameOfLife);
+    TOGGLE = "start";
+  } else if (TOGGLE === "start") {
+    grid.tickLoop("stop", animationGameOfLife);
+    TOGGLE = "stop";
+  }
 });
 
 document.getElementById("button-speed-up")?.addEventListener("click", () => {
@@ -196,11 +238,93 @@ document.getElementById("button-slow-down")?.addEventListener("click", () => {
 });
 
 document
-  .getElementById("button-switch-pattern")
+  .getElementById("patterns-import-button")
   ?.addEventListener("click", () => {
-    cleanCanvas();
-    grid.tickLoop("destroy", animationGameOfLife);
-    currentPattern = boundIndex(currentPattern, 1, PATTERNS.length);
-    applyPatternToCanvas(PATTERNS[currentPattern]);
+    const patternsInput = <HTMLInputElement>(
+      document.getElementById("patterns-import-input")
+    );
+
+    if (patternsInput !== null) {
+      resetCanvas();
+      applyPatternToCanvas("Imported Canvas", patternsInput.value ?? "");
+      grid.render();
+    }
+  });
+
+document
+  .getElementById("patterns-export-button")
+  ?.addEventListener("click", async () => {
+    const exportDisplayContent = document.getElementById(
+      "patterns-export-content",
+    );
+    const exportDisplayMessage = document.getElementById(
+      "patterns-export-message",
+    );
+    const compressed = grid.compress();
+
+    if (exportDisplayContent !== null) {
+      exportDisplayContent.textContent = compressed;
+    }
+    if (exportDisplayMessage !== null) {
+      exportDisplayMessage.setAttribute(
+        "style",
+        "display: inherit; text-align: center;",
+      );
+
+      try {
+        await navigator.clipboard.writeText(compressed);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  });
+
+// const buttonDebug = document.createElement("button");
+// buttonDebug.className = "button";
+// buttonDebug.textContent = "Debug";
+// buttonDebug.addEventListener("click", () => {
+//   grid.decompress(
+//     "A4OIcmhLzvX1O6QqgiFEQUcEyB239mV9b9YHhlisWDijj0o0wrNeEqr81xqI60USUXYp0qnVhn0b3d+DuQb9hVDtFwlpvhcaTCq1dC8mVD4DQ1cCMmT+773b9SYrFXkvcNBAXY23k4lGx26ni9MdjbhOE94BWtLwRPVAImLbD3UYh0T8f/4PPpOjQN/nQVi5DVNy3fdagr5K2yRdtQRrAvkfwFCpKzqD6RFK+Xz9dWZ0bSFH27uqh0OTwbreTaqiyfd4qjnZg8pF6g33uJZrZNhXjasJZIaKRrSsoqpWTNUaO73IH8BSfgqeXmoU5DminA1jk87HGdefxnSphVAB1Q==",
+//   );
+//   grid.render();
+// });
+// document.getElementById("buttons")?.appendChild(buttonDebug);
+
+document
+  .getElementById("button-clean-canvas")
+  ?.addEventListener("click", () => {
+    resetCanvas();
+    applyPatternToCanvas("Blank canvas", "");
     grid.render();
   });
+
+document
+  .getElementById("patterns-search-button")
+  ?.addEventListener("click", () => {
+    const listOfPatterns = document.getElementById("patterns-list");
+
+    if (listOfPatterns === null) {
+      throw Error("No list of patterns <ul> found.");
+    }
+
+    while (listOfPatterns.lastElementChild) {
+      listOfPatterns.removeChild(listOfPatterns.lastElementChild);
+    }
+
+    const searchInput = <HTMLInputElement>(
+      document.getElementById("patterns-search-input")
+    );
+
+    if (searchInput === null) {
+      throw Error("No list of patterns <ul> found.");
+    }
+
+    if (searchInput.value.length === 0) {
+      writeListOfPatterns();
+    } else {
+      writeListOfPatterns(searchInput.value);
+    }
+  });
+
+// Canvas handler
+writeListOfPatterns();
