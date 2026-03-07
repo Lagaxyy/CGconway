@@ -138,7 +138,11 @@ class CellGrid {
     }
 
     this.#app = new Application();
-    await this.#app.init({ background: "#000000", resizeTo: pixiContainer });
+    await this.#app.init({
+      background: "#000000",
+      resizeTo: pixiContainer,
+      preference: "webgl",
+    });
     pixiContainer.appendChild(this.#app.canvas);
 
     const container = new Container({ label: LABEL_MAIN_CONTAINER });

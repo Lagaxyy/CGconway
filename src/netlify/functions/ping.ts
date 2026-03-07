@@ -1,3 +1,13 @@
+import { Config } from "@netlify/functions";
+
+export const config: Config = {
+  rateLimit: {
+    windowLimit: 10,
+    windowSize: 60,
+    aggregateBy: ["ip"],
+  },
+};
+
 export default (request: Request) => {
   try {
     const url = new URL(request.url);
